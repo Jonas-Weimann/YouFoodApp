@@ -9,9 +9,13 @@ class AuthController {
         try{
             const { email, password } = req.body
             const user = await this.service.login(email, password)
-            const token = this.service.generateToken(user)
+            const token = await this.service.generateToken(user)
             res.cookie('token', token, { httpOnly: true })
-            res.status(200).redirect('/dashboard')
+            res.status(200).json({ 
+            message: 'Login exitoso', 
+            token: token, 
+            redirectUrl: '/dashboard' // Le avisamos al front a dónde ir
+        });
             
         } catch (error) {
             next(error)
