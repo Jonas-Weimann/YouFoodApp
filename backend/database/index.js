@@ -20,9 +20,9 @@ async function insertData(){
     }
 }
 
-async function selectData(){
+async function selectData(table){
     try{
-        const result = await sql`SELECT * FROM clientes`
+        const result = await sql`SELECT * FROM ${sql(table)}`
         console.log('Datos seleccionados:', result)
     } catch (error) {
         console.error('Error al seleccionar datos:', error)
@@ -34,4 +34,4 @@ async function selectData(){
 
 createTables()
 insertData()
-selectData()
+selectData('empleados')

@@ -88,3 +88,5 @@ CREATE TABLE reportes(
     fin DATE NOT NULL,
     archivo_url TEXT
 );
+
+ALTER TABLE productos ADD COLUMN alias_facturacion VARCHAR(255);
