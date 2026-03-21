@@ -1,4 +1,5 @@
 import { pedidosService } from '../services/pedidos.service.js'
+import { finanzasService } from '../services/finanzas.service.js'
 class PedidosController {
     constructor(service) {
         this.service = service
@@ -88,6 +89,15 @@ class PedidosController {
             const updatedPedido = await this.service.updateEstadoPedido(id, estado)
             if (!updatedPedido) {
                 return res.status(404).json({ error: "Pedido no encontrado" })
+            }
+            if (updatedPedido.estado === "Completado"){
+                const data = {
+                    id_pedido : updatedPedido.id_pedido,
+                    fecha_venta : new Date(),
+                    medio_pago : "Otros",
+                    monto : updatedPedido.monto
+                }
+                await finanzasService.createVenta(data)
             }
             return res.status(200).json({
                 message: "Estado del pedido actualizado correctamente",

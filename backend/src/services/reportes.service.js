@@ -3,6 +3,7 @@ import { crearArchivoReporte } from "../utilities/reportes.js"
 import { pedidosDao } from "../daos/pedidos.dao.js"
 import { rrhhDao } from "../daos/rrhh.dao.js"
 import db from "../../database/db.js"
+import { finanzasDao } from "../daos/finanzas.dao.js";
 
 class ReportesService {
     constructor(dao){
@@ -71,15 +72,15 @@ class ReportesService {
     }
 
     _getSaldo = async (inicio, fin) => {
-    const ventas = await this.db`SELECT id_venta AS id, fecha_venta AS fecha, 'Venta de productos' AS descripcion, monto FROM ventas WHERE fecha_venta BETWEEN ${inicio} AND ${fin}`;
-    const gastos = await this.db`SELECT id_gasto AS id, fecha_gasto AS fecha, descripcion, monto FROM gastos WHERE fecha_gasto BETWEEN ${inicio} AND ${fin}`;
-    const compras = await this.db`SELECT id_compra AS id, fecha_compra AS fecha, descripcion, monto FROM compras WHERE fecha_compra BETWEEN ${inicio} AND ${fin}`;
-    const data = { ventas, gastos, compras }
+        const ventas = await finanzasDao.getRangoVentas(inicio, fin)
+        const gastos = await finanzasDao.getRangoGastos(inicio, fin)
+        const compras = await finanzasDao.getRangoCompras(inicio, fin)
+        const data = { ventas, gastos, compras }
         return data
     }
 
     _getStock = async (inicio, fin) => {
-        const compras = await this.db`SELECT * FROM compras WHERE fecha_compra BETWEEN ${inicio} AND ${fin}`
+        const compras = await finanzasDao.getRangoCompras(inicio, fin)
         return compras
     }
 
