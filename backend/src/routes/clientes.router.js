@@ -8,6 +8,9 @@ const router = Router()
 
 router.get('/', isAuthorized, getAllClientes)
 router.get('/:id', isAuthorized, getClienteById)
+router.post('/', isAuthorized, createCliente)
+router.put('/:id', isAuthorized, updateCliente)
+router.delete('/:id', isAuthorized, deleteCliente)
 
 
 export default router
