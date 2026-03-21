@@ -4,7 +4,7 @@ import clientesRouter from './clientes.router.js'
 import productosRouter from './productos.router.js'
 import pedidosRouter from './pedidos.router.js'
 // import finanzasRouter from './finanzas.router.js'
-// import reportesRouter from './reportes.router.js'
+import reportesRouter from './reportes.router.js'
 import rrhhRouter from './rrhh.router.js'
 
 
@@ -15,7 +15,7 @@ router.use('/clientes', clientesRouter)
 router.use('/productos', productosRouter)
 router.use('/pedidos', pedidosRouter)
 // router.use('/finanzas', finanzasRouter)
-// router.use('/reportes', reportesRouter)
+router.use('/reportes', reportesRouter)
 router.use('/rrhh', rrhhRouter)
 
 export default router
