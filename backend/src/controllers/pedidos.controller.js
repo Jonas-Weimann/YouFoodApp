@@ -13,8 +13,7 @@ class PedidosController {
             res.status(201).json({
                 message: "Pedido creado con éxito",
                 id_pedido: newPedido.id_pedido,
-                total: newPedido.monto,
-                todo: newPedido
+                total: newPedido.monto
             })
         } catch (error) {
             console.error("Error en PedidosController.createPedido:", error.message)

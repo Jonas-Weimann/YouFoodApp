@@ -36,6 +36,14 @@ class PedidosService {
             throw error
         }
     }
+    getPedidosByRange = async (inicio, fin) =>{
+        try {
+            return await this.dao.getByRange(inicio, fin)
+        } catch (error) {
+            console.error("Error en PedidosService.getPedidosByRange:", error.message)
+            throw error
+        }
+    }
     updatePedido = async (id, pedidoData) => {
         try {
             return await this.dao.update(id, pedidoData)
