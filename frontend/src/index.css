@@ -1,11 +1,25 @@
 @import "tailwindcss";
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @theme {
   --font-sans: "Geist Variable", sans-serif;
+  --animation-fade-in: fadeInSlideUp 0.4s ease-out;
 }
 
 :root {
   --radius: 0.65rem;
   --background: oklch(21.472% 0.02306 14.402);
+  --background-dimmed: oklch(25.567% 0.03002 15.874);
   --background-light: oklch(30.365% 0.04103 14.918);
   --background-lighter: oklch(36.612% 0.03155 12.596);
   --foreground: oklch(0.141 0.005 285.823);
@@ -21,6 +35,7 @@
   --muted: oklch(0.967 0.001 286.375);
   --muted-foreground: oklch(0.552 0.016 285.938);
   --accent: oklch(68.774% 0.14035 17.58);
+  --accent-dimmed: oklch(63.693% 0.1304 17.226);
   --accent-foreground: oklch(56.314% 0.11618 17.308);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.92 0.004 286.32);
