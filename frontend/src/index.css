@@ -1,6 +1,11 @@
+@import "tailwindcss";
+@theme {
+  --font-sans: "Geist Variable", sans-serif;
+}
+
 :root {
   --radius: 0.65rem;
-  --background: oklch(1 0 0);
+  --background: oklch(21.472% 0.02306 14.402);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
@@ -23,6 +28,8 @@
   --chart-3: oklch(0.577 0.245 27.325);
   --chart-4: oklch(0.505 0.213 27.518);
   --chart-5: oklch(0.444 0.177 26.899);
+  --header: oklch(21.472% 0.02306 14.402);
+  --header-text: oklch(68.774% 0.14035 17.58);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.141 0.005 285.823);
   --sidebar-primary: oklch(0.577 0.245 27.325);
