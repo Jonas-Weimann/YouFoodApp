@@ -1,18 +1,22 @@
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
 import { LoginForm } from "@/components/auxiliars/login-form"
 import { RegisterForm } from "@/components/auxiliars/register-form"
+import { useLocation, useNavigate } from "react-router-dom"
 
 const LOGIN_STATE = "Iniciar Sesión"
 const REGISTER_STATE = "Registrarse"
 
 export const LoginRegister = () => {
-    const [action, setAction] = useState(LOGIN_STATE);
-
-    
+    const location = useLocation()
+    const navigate = useNavigate()
+    const action = location.pathname === "/register" ? REGISTER_STATE : LOGIN_STATE
 
     const toggleAction = () => {
-        setAction(prev => prev === LOGIN_STATE ? REGISTER_STATE : LOGIN_STATE)
+        if (action === LOGIN_STATE) {
+            navigate("/register")
+        } else {
+            navigate("/login")
+        }
     }
 
     const buttonText = action === LOGIN_STATE ? REGISTER_STATE : LOGIN_STATE
@@ -23,13 +27,13 @@ export const LoginRegister = () => {
         </aside>
         <section className=" w-1/2 h-full absolute top-0 right-0">
             <Button 
-            onClick={toggleAction} 
-            className={'absolute w-auto h-10 cursor-pointer top-4 right-4 md:top-8 md:right-8 hover:bg-(--background-dimmed) text-(--text)'}>
+                onClick={toggleAction} 
+                className={'absolute w-auto h-10 cursor-pointer top-4 right-4 md:top-8 md:right-8 hover:bg-(--background-dimmed) text-(--text)'}>
                 {buttonText}
             </Button>
             <div className="flex items-center justify-center size-full">
-                <div key={action} className="animate-(--animation-fade-in) w-full flex items-center justify-center">
-                    {action == LOGIN_STATE? <LoginForm /> : <RegisterForm/>}
+                <div key={location.pathname} className="animate-(--animation-fade-in) w-full flex items-center justify-center">
+                    {action === LOGIN_STATE ? <LoginForm /> : <RegisterForm />}
                 </div>
             </div>
         </section>

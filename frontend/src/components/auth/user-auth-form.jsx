@@ -10,29 +10,35 @@ import { useAuthStore } from "@/hooks/use-auth"
 import { useNavigate } from "react-router-dom"
 import { GoogleLogin } from '@react-oauth/google'
 
-const checkPassword = (isLogin) => {
-  let password = document.getElementById("password").value;
-  let confirmPassword = isLogin ? document.getElementById("password-confirm").value : password;
-  let message = document.getElementById("message");
-  if (password.length < 8) {
-  message.innerHTML =
-    "La contraseña debe tener al menos 8 caracteres<br/>";
-  message.style.color = "salmon";
-  return false;
-  }
-  if (password !== confirmPassword) {
-  message.innerHTML = "Las contraseñas no coinciden<br/>";
-  message.style.color = "salmon";
-  return false;
-  }
-  message.innerHTML = "";
-  return true;
-};
-
 export function UserAuthForm({ action, ...props }) {
   const [isLoading, setIsLoading] = useState(false)
   const setLogin = useAuthStore((state) => state.setLogin)
   const navigate = useNavigate()
+
+  const isLogin = action === "Iniciar Sesión"
+
+  const checkPassword = () => {
+    let password = document.getElementById("password").value;
+    let message = document.getElementById("message");
+    
+    if (!isLogin) {
+      let confirmPassword = document.getElementById("password-confirm").value;
+      if (password !== confirmPassword) {
+        message.innerHTML = "Las contraseñas no coinciden<br/>";
+        message.style.color = "salmon";
+        return false;
+      }
+    }
+
+    if (password.length < 8) {
+      message.innerHTML = "La contraseña debe tener al menos 8 caracteres<br/>";
+      message.style.color = "salmon";
+      return false;
+    }
+
+    message.innerHTML = "";
+    return true;
+  };
 
   async function onSubmit(event) {
     event.preventDefault()
@@ -49,11 +55,19 @@ export function UserAuthForm({ action, ...props }) {
     try {
       const endpoint = isLogin ? '/auth/login' : '/auth/register';
       const response = await api.post(endpoint, payload);
-      if(!response) throw new Error(response)
+      
       const { user, token } = response.data; 
+      
       setLogin(user, token);
+      
       toast.success(isLogin ? "¡Bienvenido!" : "Cuenta creada con éxito");
-      isLogin ? navigate("/dashboard") : navigate("/login")
+
+      if (isLogin) {
+        navigate("/dashboard")
+      } else {
+        navigate("/login") 
+      }
+
     } catch (error) {
         toast.error(error);
         console.error("Error en la petición:", error);
@@ -66,65 +80,61 @@ export function UserAuthForm({ action, ...props }) {
     try {
       const tokenGoogle = credentialResponse.credential
       const { data } = await api.post('/auth/google', { token: tokenGoogle })
+      
       setLogin(data.user, data.token)
       toast.success("Logueo con Google exitoso")
+      
       navigate("/dashboard")
     } catch (error) {
-      console.error("Error en el logueo con Google:", error.response?.data || error.message)
-      toast.error("Error al iniciar con Google")
+      toast.error(error);
     }
   }
 
-  const isLogin = action === "Iniciar Sesión"
-
-    return (
-    <div className={("grid gap-6")} {...props}>
+  return (
+    <div className="grid gap-6" {...props}>
       <form onSubmit={onSubmit}>
         <FieldGroup>
           <Field>
-            <FieldLabel className="sr-only" htmlFor="email">
-              Email
-            </FieldLabel>
+            <FieldLabel className="sr-only" htmlFor="email">Email</FieldLabel>
             <Input
               id="email"
               placeholder="Correo electrónico"
               type="email"
               name="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
               required
-              className={'bg-(--background-light) text-base md:text-base file:text-base text-(--text) placeholder:text-base h-10'}
+              className={'bg-(--background-light) text-base md:text-base text-(--text) h-10'}
               disabled={isLoading}
             />
-              {!isLogin && <Input
-              id="name"
-              placeholder="Nombre"
-              name="name"
-              required
-              autoCapitalize="words"
-              autoCorrect="off"
-              className={'bg-(--background-light) text-base md:text-base file:text-base text-(--text) placeholder:text-base h-10'}
-              disabled={isLoading}
-            />}
+            {!isLogin && (
+              <Input
+                id="name"
+                placeholder="Nombre"
+                name="name"
+                required
+                className={'bg-(--background-light) text-base md:text-base text-(--text) h-10'}
+                disabled={isLoading}
+              />
+            )}
             <Input
               id="password"
               placeholder="Contraseña"
               type="password"
               name="password"
               required
-              className={'bg-(--background-light) text-base md:text-base file:text-base text-(--text) placeholder:text-base h-10'}
+              className={'bg-(--background-light) text-base md:text-base text-(--text) h-10'}
               disabled={isLoading}
             />
-            {!isLogin && <Input
-              id="password-confirm"
-              placeholder="Confirmar contraseña"
-              type="password"
-              required
-              name="password-confirm"
-              className={'bg-(--background-light) text-base md:text-base file:text-base text-(--text) placeholder:text-base h-10'}
-              disabled={isLoading}
-            />}
+            {!isLogin && (
+              <Input
+                id="password-confirm"
+                placeholder="Confirmar contraseña"
+                type="password"
+                required
+                name="password-confirm"
+                className={'bg-(--background-light) text-base md:text-base text-(--text) h-10'}
+                disabled={isLoading}
+              />
+            )}
           </Field>
           <Field>
             <h2 id="message" className="text-center"></h2>
@@ -134,7 +144,7 @@ export function UserAuthForm({ action, ...props }) {
               className={'bg-(--accent) text-(--background) h-10 text-md hover:bg-(--accent-dimmed) cursor-pointer'}
             >
               {isLoading && <Spinner />}
-              {isLogin? 'Iniciar Sesión' : 'Registrarse'}
+              {isLogin ? 'Iniciar Sesión' : 'Registrarse'}
             </Button>
           </Field>
         </FieldGroup>
@@ -146,7 +156,6 @@ export function UserAuthForm({ action, ...props }) {
           onError={() => toast.error("Fallo el login")}
           theme="filled_black"
           shape="pill"
-          useOneTap
         />
       </div>
     </div>
