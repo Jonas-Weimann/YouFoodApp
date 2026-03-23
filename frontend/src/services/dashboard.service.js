@@ -7,11 +7,22 @@ export const dashboardService = {
       api.get('/finanzas/gastos'),
       api.get('/finanzas/compras')
     ])
-    return { ventas: v.data, gastos: g.data, compras: c.data }
+    return { 
+      ventas: v.data || [], 
+      gastos: g.data || [], 
+      compras: c.data || [] 
+    }
+  },
+
+  getVentasSemana: async (inicio, fin) => {
+    const { data } = await api.get('/finanzas/ventas/rango', {
+      params: { inicio, fin }
+    })
+    return data || []
   },
 
   getPedidos: async () => {
     const { data } = await api.get('/pedidos')
-    return data
+    return data || []
   }
 }

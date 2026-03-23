@@ -1,8 +1,27 @@
 import api from '@/api/api'
 
 export const pedidosService = {
-  getAll: () => api.get('/pedidos').then(res => res.data),
-  getByDate: (fecha) => api.get(`/pedidos/date?fecha=${fecha}`).then(res => res.data),
-  updateEstado: (id, nuevoEstado) => api.patch(`/pedidos/${id}`, { estado: nuevoEstado }).then(res => res.data),
-  delete: (id) => api.delete(`/pedidos/${id}`).then(res => res.data)
+  getAll: async () => {
+    const { data } = await api.get('/pedidos')
+    return data
+  },
+
+  getByDate: async (fecha) => {
+    const { data } = await api.get('/pedidos/date', {
+      params: { fecha }
+    })
+    return data
+  },
+
+  updateEstado: async (id, nuevoEstado) => {
+    const { data } = await api.patch(`/pedidos/${id}`, { 
+      estado: nuevoEstado 
+    })
+    return data
+  },
+
+  delete: async (id) => {
+    const { data } = await api.delete(`/pedidos/${id}`)
+    return data
+  }
 }

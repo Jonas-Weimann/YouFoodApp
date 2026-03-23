@@ -1,9 +1,10 @@
 import './App.css'
 import "@fontsource-variable/geist"
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Template } from './pages/template'
 import { LoginRegister } from './pages/login-register'
 import { useAuthStore } from '@/hooks/use-auth'
+import { DashboardPage } from './pages/dashboard'
+import { Template } from './pages/template'
 
 function App() {
   const isAuth = useAuthStore((state) => state.isAuth)
@@ -14,7 +15,7 @@ function App() {
       <Route path="/register" element={<LoginRegister />} />
       <Route 
         path="/dashboard" 
-        element={isAuth ? <Template /> : <Navigate to="/login" />} 
+        element={isAuth ? <Template><DashboardPage /></Template> : <Navigate to="/login" replace/>} 
       />
       <Route path="/" element={<Navigate to="/login" />} />      
     </Routes>
