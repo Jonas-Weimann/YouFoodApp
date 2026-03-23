@@ -23,8 +23,8 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        console.log("Error en la API", error.message)
-        return Promise.reject(error)
+      const errorMessage = error.response.data.message || "Error inesperado";
+      return Promise.reject(errorMessage);
     }
 )
 

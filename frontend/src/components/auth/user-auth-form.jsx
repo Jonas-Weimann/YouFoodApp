@@ -10,9 +10,9 @@ import { useAuthStore } from "@/hooks/use-auth"
 import { useNavigate } from "react-router-dom"
 import { GoogleLogin } from '@react-oauth/google'
 
-const checkPassword = () => {
+const checkPassword = (isLogin) => {
   let password = document.getElementById("password").value;
-  let confirmPassword = document.getElementById("password-confirm").value;
+  let confirmPassword = isLogin ? document.getElementById("password-confirm").value : password;
   let message = document.getElementById("message");
   if (password.length < 8) {
   message.innerHTML =
@@ -40,23 +40,23 @@ export function UserAuthForm({ action, ...props }) {
     setIsLoading(true)
 
     const formData = new FormData(event.currentTarget)
-    const email = formData.get("email")
-    const password = formData.get("password")
-    const name = formData.get("name")
+    const payload = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        password: formData.get("password")
+    }
 
     try {
-      var data = {}
-      if (action === "Iniciar Sesión"){
-         data = await api.post('/auth/login', { email, password })
-      } else {
-         data = await api.post('/auth/register', { email, name, password })
-      }
-      setLogin(data.token)
-      toast.success(isLogin ? "¡Bienvenido!" : "Cuenta creada con éxito")
-      navigate("/dashboard")
+      const endpoint = isLogin ? '/auth/login' : '/auth/register';
+      const response = await api.post(endpoint, payload);
+      if(!response) throw new Error(response)
+      const { user, token } = response.data; 
+      setLogin(user, token);
+      toast.success(isLogin ? "¡Bienvenido!" : "Cuenta creada con éxito");
+      isLogin ? navigate("/dashboard") : navigate("/login")
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error en la conexión")
-      console.error("Error en la petición:", error.response?.data || error.message)
+        toast.error(error);
+        console.error("Error en la petición:", error);
     } finally {
       setIsLoading(false)
     }
@@ -146,6 +146,7 @@ export function UserAuthForm({ action, ...props }) {
           onError={() => toast.error("Fallo el login")}
           theme="filled_black"
           shape="pill"
+          useOneTap
         />
       </div>
     </div>
