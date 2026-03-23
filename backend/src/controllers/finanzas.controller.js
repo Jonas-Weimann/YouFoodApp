@@ -15,7 +15,7 @@ class FinanzasController {
 
     getVentasByRange = async (req, res) => {
         try {
-            const { inicio, fin } = req.body
+            const { inicio, fin } = req.query
             const ventas = await this.service.getVentasByRange(inicio, fin)
             res.status(200).json(ventas)
         } catch (error) {

@@ -46,7 +46,18 @@ class PedidosDao {
     }
     getAll = async () => {
         try {
-            const pedidos = await this.db`SELECT * FROM pedidos ORDER BY fecha_entrega DESC LIMIT 50`
+            const pedidos = await this.db`
+                SELECT 
+                    p.*, 
+                    -- Creamos el objeto cliente para que el front no se rompa
+                    json_build_object(
+                        'nombre', c.nombre
+                    ) AS cliente
+                FROM pedidos p
+                JOIN clientes c ON p.id_cliente = c.id_cliente
+                ORDER BY p.fecha_entrega DESC 
+                LIMIT 50
+            `
             return pedidos
         } catch (error) {
             console.error("Error en PedidosDao.getAll:", error.message)

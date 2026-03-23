@@ -3,9 +3,10 @@ import { authController } from '../controllers/auth.controller.js';
 
 const router = Router()
 
-const { login, register, logout } = authController
+const { login, loginGoogle, register, logout } = authController
 
 router.post('/login', login)
+router.post('/google', loginGoogle)
 router.post('/register', register)
 router.post('/logout', logout)
 

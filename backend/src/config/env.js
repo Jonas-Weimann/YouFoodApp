@@ -13,5 +13,9 @@ export const env = {
   ADMIN_EMAILS: process.env.ADMIN_EMAILS ? process.env.ADMIN_EMAILS.split(',') : [],
   JWT_SECRET: process.env.JWT_SECRET,
   SUPABASE_URL: process.env.SUPABASE_URL, 
-  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY
+  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  VITE_OAUTH_ID_CLIENT: process.env.VITE_OAUTH_ID_CLIENT,
+  ROLE_ADMIN: process.env.ROLE_ADMIN,
+  ROLE_USER: process.env.ROLE_USER,
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD
 };

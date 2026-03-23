@@ -11,7 +11,7 @@ const isAuthorized = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, env.JWT_SECRET);
         req.user = decoded;
-        if (decoded.role !== 'admin') {
+        if (decoded.rol !== 'admin') {
             return res.status(403).json({ message: 'Acceso denegado: se requieren permisos de administrador' });
         }
         next();
