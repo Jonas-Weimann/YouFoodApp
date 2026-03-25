@@ -5,8 +5,9 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { BarChart, Bar, XAxis, ResponsiveContainer, Tooltip, YAxis, CartesianGrid } from 'recharts'
-import { Loader2, AlertCircle, RefreshCw } from "lucide-react"
+import { Loader2, AlertCircle } from "lucide-react"
 import { useAuthStore } from "@/hooks/use-auth"
+import { colorDeEstado, actualizarEstado } from "@/utilities/estado.js"
 
 export const DashboardPage = () => {
   const { user } = useAuthStore()
@@ -22,7 +23,7 @@ export const DashboardPage = () => {
   if (isError) return (
     <div className="flex h-[60vh] flex-col items-center justify-center gap-4 text-center p-6">
       <AlertCircle className="text-red-500 w-16 h-16" />
-      <h2 className="text-xl font-bold text-(--text)">Vaya, algo salió mal</h2>
+      <h2 className="text-xl font-bold text-(--text)">Ha ocurrido un error.</h2>
       <p className="text-muted-foreground max-w-xs">
         {typeof error === 'string' ? error : (error?.message || "Error de conexión")}
       </p>
@@ -48,7 +49,7 @@ export const DashboardPage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 bg-(--background-trans) border-none shadow-xl">
+        <Card className="lg:col-span-2 bg-(--background-trans) border-1 shadow-xl border-(--accent) ">
           <CardHeader><CardTitle className="text-xs  font-bold text-(--accent-foreground) text-lg">Flujo Semanal</CardTitle></CardHeader>
           <CardContent className="h-80 min-h-[300px] w-full"> 
             <ResponsiveContainer width="100%" height="100%">
@@ -63,7 +64,7 @@ export const DashboardPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-xl overflow-hidden bg-(--background-trans)">
+        <Card className="border shadow-xl overflow-hidden bg-(--background-trans) border-(--accent)">
           <CardHeader className="border-b border-white/5 ">
             <CardTitle className="text-lg font-bold text-(--accent-foreground) ">Pedidos Recientes</CardTitle>
           </CardHeader>
@@ -71,9 +72,11 @@ export const DashboardPage = () => {
             <Table>
               <TableBody>
                 {data?.pedidos?.length > 0 ? data.pedidos.slice(0, 6).map((p, index) => (
-                  <TableRow key={p.id_pedido || p._id || index} className="border-b border-white/5">
+                  <TableRow key={p.id_pedido || p._id || index} id={p.id_pedido} className="border-b border-white/5">
                     <TableCell className="py-4 pl-6 text-slate-200">{p.cliente?.nombre || 'Cliente Final'}</TableCell>
-                    <TableCell><Badge variant="outline" className="border-(--accent) text-(--accent) text-[12px]">{p.estado}</Badge></TableCell>
+                    <TableCell><Badge onClick={ async () =>{
+                      await actualizarEstado(p.id_pedido, p.estado)
+                      location.reload()}} variant="outline" className={` cursor-pointer border-${colorDeEstado(p.estado)} text-${colorDeEstado(p.estado)} text-[12px]`}>{p.estado}</Badge></TableCell>
                     <TableCell className="text-right pr-6 font-mono text-(--text)">
                       {formatearMoneda(p.total || p.monto || 0)}
                     </TableCell>
@@ -97,14 +100,14 @@ export const DashboardPage = () => {
 }
 
 const MiniLista = ({ titulo, items = [], color }) => (
-  <Card className="bg-(--background-trans) border-none shadow-lg">
-    <CardHeader className="py-4 border-b border-white/5 text-lg text-(--accent-dimmed)">
-      <CardTitle className="text-base font-bold">{titulo}</CardTitle>
+  <Card className={`bg-(--background-trans) border ${color} shadow-lg`}>
+    <CardHeader className="py-4 border-b border-white/5 text-lg ">
+      <CardTitle className={`text-base font-bold ${color}`}>{titulo}</CardTitle>
     </CardHeader>
     <CardContent className="space-y-3 pt-4">
       {items && items.length > 0 ? items.map((i, index) => (
         <div key={i.id_venta || i.id_gasto || i._id || index} className="flex justify-between items-center text-sm">
-          <span className="truncate max-w-[140px] text-slate-300">{i.descripcion || 'Sin descripción'}</span>
+          <span className="truncate max-w-[140px] text-slate-300 text-(--accent-dimmed)" >{i.descripcion || 'Sin descripción'}</span>
           <span className={`font-mono font-bold ${color}`}>{formatearMoneda(i.monto || i.total || 0)}</span>
         </div>
       )) : <p className="text-xs text-muted-foreground italic text-center py-2">Sin movimientos</p>}

@@ -21,5 +21,10 @@ export const finanzasService = {
       params: { desde, hasta }
     })
     return data
-  }
+  },
+
+  deleteVentaByPedido: async (id_pedido) => {
+    await api.delete(`/finanzas/ventas/pedido/${id_pedido}`)
+  } 
+
 }
