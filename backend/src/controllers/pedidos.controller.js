@@ -53,6 +53,16 @@ class PedidosController {
             res.status(500).json({ error: "Error al obtener los pedidos por fecha" })
         }
     }
+    getPedidosByRange = async (req, res) => {
+        try {
+            const { inicio, fin } = req.query
+            const pedidos = await this.service.getPedidosByRange(inicio, fin)
+            res.json(pedidos)
+        } catch (error) {
+            console.error("Error en PedidosController.getPedidosByDate:", error.message)
+            res.status(500).json({ error: "Error al obtener los pedidos por fecha" })
+        }
+    }
     updatePedido = async (req, res) => {
         try {
             const { id } = req.params
