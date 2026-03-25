@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { LoginRegister } from './pages/login-register'
 import { useAuthStore } from '@/hooks/use-auth'
 import { DashboardPage } from './pages/dashboard'
+import { PedidosPage } from './pages/pedidos'
 import { Template } from './pages/template'
 
 function App() {
@@ -16,6 +17,10 @@ function App() {
       <Route 
         path="/dashboard" 
         element={isAuth ? <Template><DashboardPage /></Template> : <Navigate to="/login" replace/>} 
+      />
+      <Route 
+        path="/pedidos" 
+        element={isAuth ? <Template><PedidosPage /></Template> : <Navigate to="/login" replace/>} 
       />
       <Route path="/" element={<Navigate to="/login" />} />      
     </Routes>

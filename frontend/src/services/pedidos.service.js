@@ -7,8 +7,15 @@ export const pedidosService = {
   },
 
   getByDate: async (fecha) => {
-    const { data } = await api.get('/pedidos/date', {
+    const { data } = await api.get('/pedidos/fecha', {
       params: { fecha }
+    })
+    return data
+  },
+
+  getByRange: async (inicio, fin) => {
+    const { data } = await api.get('/pedidos/rango', {
+      params: { inicio, fin }
     })
     return data
   },
