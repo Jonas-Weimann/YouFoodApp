@@ -16,13 +16,15 @@ import {
   UtensilsCrossed, 
   Contact, 
   ChefHat,
-  UserRound 
+  UserRound,
+  Package2
 } from "lucide-react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useAuthStore } from "@/hooks/use-auth"
 
 const secciones = [
   { nombre: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
+  { nombre: 'Pedidos', url: '/pedidos', icon: Package2 },
   { nombre: 'Ventas', url: '/ventas', icon: CircleDollarSign },
   { nombre: 'Compras', url: '/compras', icon: CreditCard },
   { nombre: 'Finanzas', url: '/finanzas', icon: Landmark },
