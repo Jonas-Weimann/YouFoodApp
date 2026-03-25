@@ -2,7 +2,7 @@ import { Router } from "express"
 import { finanzasController } from "../controllers/finanzas.controller.js"
 import isAuthorized from "../middlewares/auth.middleware.js"
 
-const { getAllCompras, getAllGastos, getAllVentas, getComprasByRange, getGastosByRange, getVentasByRange, updateCompra, updateGasto, updateVenta, createCompra, createGasto, createVenta, deleteCompra, deleteGasto, deleteVenta } = finanzasController
+const { getAllCompras, getAllGastos, getAllVentas, getComprasByRange, getGastosByRange, getVentasByRange, updateCompra, updateGasto, updateVenta, createCompra, createGasto, createVenta, deleteCompra, deleteGasto, deleteVenta, deleteVentaByPedido } = finanzasController
 
 const router = Router()
 
@@ -11,6 +11,7 @@ router.get('/ventas/rango/', isAuthorized, getVentasByRange)
 router.post('/ventas',isAuthorized, createVenta)
 router.put('/ventas/:id',isAuthorized, updateVenta)
 router.delete('/ventas/:id',isAuthorized, deleteVenta)
+router.delete('/ventas/pedido/:id',isAuthorized, deleteVentaByPedido)
 
 router.get('/gastos',isAuthorized, getAllGastos)
 router.get('/gastos/rango/',isAuthorized, getGastosByRange)

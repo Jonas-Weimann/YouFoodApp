@@ -49,6 +49,15 @@ class FinanzasService {
         }
     }
 
+    deleteVentaByPedido = async (id_pedido) => {
+        try {
+            return await this.dao.deleteVentaByPedido(id_pedido)
+        } catch (error) {
+            console.error("Error en FinanzasService.deleteVentaByPedido:", error.message)
+            throw error
+        }
+    }
+
     getAllGastos = async () => {
         try {
             return await this.dao.getGastos()

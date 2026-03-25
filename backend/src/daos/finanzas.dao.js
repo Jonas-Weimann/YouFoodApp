@@ -56,6 +56,16 @@ class FinanzasDao {
         }
     }
 
+    deleteVentaByPedido = async (id_pedido) => {
+        try {
+            await this.db`DELETE FROM ventas WHERE id_pedido = ${id_pedido}`
+            return { message: "Venta eliminada" }
+        } catch (error) {
+            console.error("Error en FinanzasDao.deleteVentaByPedido:", error.message)
+            throw error
+        }
+    }
+
     getGastos = async () => {
         try {
             const gastos = await this.db`SELECT * FROM gastos ORDER BY fecha_gasto DESC`

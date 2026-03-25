@@ -56,6 +56,17 @@ class FinanzasController {
         }
     }
 
+    deleteVentaByPedido = async (req, res) => {
+        try {
+            const { id } = req.params
+            const deleted = await this.service.deleteVentaByPedido(id)
+            if (deleted) res.status(200).json({ message: "Venta eliminada correctamente" })
+            else res.status(404).json({ error: "Venta no encontrada" })
+        } catch (error) {
+            res.status(500).json({ error: error.message })
+        }
+    }
+
     getAllGastos = async (req, res) => {
         try {
             const gastos = await this.service.getAllGastos()
