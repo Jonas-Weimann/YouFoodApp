@@ -71,6 +71,7 @@ class PedidosController {
             if (!updatedPedido) {
                 return res.status(404).json({ error: "Pedido no encontrado" })
             }
+            res.status(200).json(updatedPedido)
         } catch (error) {
             console.error("Error en PedidosController.updatePedido:", error.message)
             res.status(500).json({ error: "Error al actualizar el pedido" })
