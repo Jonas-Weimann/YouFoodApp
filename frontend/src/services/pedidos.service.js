@@ -27,6 +27,11 @@ export const pedidosService = {
     return data
   },
 
+  updatePedido: async (nuevaData) => {
+    const { data } = await api.put(`/pedidos/${nuevaData.id_pedido}`, nuevaData)
+    return data
+  },
+
   delete: async (id) => {
     const { data } = await api.delete(`/pedidos/${id}`)
     return data

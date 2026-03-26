@@ -1,15 +1,21 @@
+import { useState } from "react"
 import { Kpi } from "@/components/ui/kpi" 
 import { usePedidosData } from "@/hooks/use-pedidos-data"
-import { formatearMoneda } from "@/utilities/formatters"
+import { formatearMoneda, formatearFecha, parsearFechaLocal } from "@/utilities/formatters"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCaption, TableCell, TableRow, TableHeader, TableHead, TableFooter } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { BarChart, Bar, XAxis, ResponsiveContainer, Tooltip, YAxis, CartesianGrid } from 'recharts'
+import { Area, AreaChart, BarChart, Bar, XAxis, ResponsiveContainer, Tooltip, YAxis, CartesianGrid } from 'recharts'
 import { Loader2, AlertCircle } from "lucide-react"
 import { useAuthStore } from "@/hooks/use-auth"
 import { colorDeEstado, actualizarEstado } from "@/utilities/estado.js"
+import { Calendar } from "@/components/ui/calendar"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { pedidosService } from "@/services/pedidos.service"
+import { es } from "date-fns/locale"
 
 export const PedidosPage = () => {
+  const [pedidoAbierto, setPedidoAbierto] = useState(null)
   const { user } = useAuthStore()
   const { data, isLoading, error, isError, refetch } = usePedidosData()
 
@@ -33,6 +39,22 @@ export const PedidosPage = () => {
     </div>
   )
 
+  const actualizarFecha = async (pedido, nuevaFecha) => {
+    try {
+      if (!nuevaFecha) return;
+      await pedidosService.updatePedido({...pedido, fecha_entrega: nuevaFecha})
+      refetch()
+      toggleCalendario(pedido.id_pedido)
+    } catch (err) {
+      console.error("Error al actualizar fecha", err)
+    }
+  }
+
+  const toggleCalendario = (id) => {
+    setPedidoAbierto(prevId => (prevId === id ? null : id));
+  }
+
+
   return (
     <div className="space-y-6 animate-(--animation-fade-in)">
       <header className="flex flex-col gap-1">
@@ -41,76 +63,101 @@ export const PedidosPage = () => {
         </h1>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Kpi title="Ventas Hoy" color="text-green-500" >{formatearMoneda(data?.kpis?.ventas || 0)}</Kpi>
-        <Kpi title="Gastos Hoy" color="text-red-400" >{formatearMoneda(data?.kpis?.gastos || 0)}</Kpi>
-        <Kpi title="Pedidos Activos" color="text-(--accent)" >{(data?.kpis?.pedidos || 0)}</Kpi>
-        <Kpi title="Balance Neto" color="text-blue-400" >{formatearMoneda(data?.kpis?.balance || 0)}</Kpi>
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-1">
+        <Kpi title="Pedidos a entregar Hoy" color="text-green-500" >{data.pedidosHoy}</Kpi>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 bg-(--background-trans) border-1 shadow-xl border-(--accent) ">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <Card className="lg:col-span-2 bg-(--background-trans) border shadow-xl border-(--accent) ">
           <CardHeader><CardTitle className="text-xs  font-bold text-(--accent-foreground) text-lg">Flujo Semanal</CardTitle></CardHeader>
           <CardContent className="h-80 min-h-[300px] w-full"> 
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data?.grafico?.length > 0 ? data.grafico : [{d: 'Hoy', t: data?.kpis?.ventas || 0}]} className="bg-(--background-trans)">
+              <AreaChart data={data?.grafico?.length > 0 ? data.grafico : [{d: 'Hoy', t: data?.pedidosHoy || 0}]} margin={{left:12, right:12}} className="bg-(--background-trans)">
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgb(78, 56, 58)" />
-                <XAxis dataKey="Día" axisLine={false} tickLine={false} tick={{fill: 'gray', fontSize: 12}} />
+                <XAxis dataKey="Día" axisLine={false} tickLine={false} tick={{fill: 'gray', fontSize: 12}} tickMargin={8} tickFormatter={(value) => value.slice(0,3)}/>
                 <YAxis hide />
-                <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.05)'}} contentStyle={{backgroundColor: '#1a1a1a', color:'salmon', border: 'none', borderRadius: 16}} className="text-xl" formatter={(value) => formatearMoneda(value)}/>
-                <Bar name="Ventas" dataKey="Ventas" fill="rgb(206, 103, 110)" radius={[6, 6, 0, 0]} barSize={40} activeBar={{fill: 'rgb(235, 130, 137)', stroke: 'salmon', strokeWidth: 1, cursor: 'pointer'}} />
-              </BarChart>
+                <Tooltip cursor={{ fill: 'rgba(255, 255, 255, 0.05)'}} contentStyle={{backgroundColor: '#1a1a1a', color:'salmon', border: 'none', borderRadius: 16}} className="text-xl" formatter={(value) => value}/>
+                <defs>
+                  <linearGradient id="fillPedidos" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                      offset="15%"
+                      stopColor="var(--accent)"
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="85%"
+                      stopColor="var(--background)"
+                      stopOpacity={0.1}
+                    />
+                  </linearGradient>
+                </defs>
+                <Area
+                  dataKey="Cantidad"
+                  type="natural"
+                  fill="url(#fillPedidos)"
+                  fillOpacity={0.4}
+                  stroke="var(--ring)"
+                  stackId="a"
+                />
+                
+              </AreaChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="border shadow-xl overflow-hidden bg-(--background-trans) border-(--accent)">
-          <CardHeader className="border-b border-white/5 ">
-            <CardTitle className="text-lg font-bold text-(--accent-foreground) ">Pedidos Recientes</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableBody>
-                {data?.pedidos?.length > 0 ? data.pedidos.slice(0, 6).map((p, index) => (
-                  <TableRow key={p.id_pedido || p._id || index} id={p.id_pedido} className="border-b border-white/5">
-                    <TableCell className="py-4 pl-6 text-slate-200">{p.cliente?.nombre || 'Cliente Final'}</TableCell>
-                    <TableCell><Badge onClick={ async () =>{
-                      await actualizarEstado(p.id_pedido, p.estado)
-                      location.reload()}} variant="outline" className={` cursor-pointer border-${colorDeEstado(p.estado)} text-${colorDeEstado(p.estado)} text-[12px]`}>{p.estado}</Badge></TableCell>
-                    <TableCell className="text-right pr-6 font-mono text-(--text)">
-                      {formatearMoneda(p.total || p.monto || 0)}
-                    </TableCell>
-                  </TableRow>
-                )) : (
-                  <TableRow><TableCell className="text-center py-10 opacity-50">Sin pedidos</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <MiniLista titulo="Ventas" items={data?.listas?.ventas} color="text-green-400" />
-        <MiniLista titulo="Compras" items={data?.listas?.compras} color="text-orange-400" />
-        <MiniLista titulo="Gastos Extra" items={data?.listas?.gastos} color="text-red-400" />
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6" >
+        <Table>
+          <TableHeader>
+            <TableRow className="text-(--accent-foreground) text-xl">
+              <TableHead >Fecha de Entrega</TableHead>
+              <TableHead >Cliente</TableHead>
+              <TableHead className="text-center">Estado</TableHead>
+              <TableHead className="text-right">Monto</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="text-(--text-dark) text-base">
+              {data.pedidos.map((pedido) => (
+              <TableRow key={pedido.id_pedido}>
+                <TableCell className="font-medium flex relative flex-row align-middle gap-2" >
+                  { pedidoAbierto == pedido.id_pedido && 
+                  <Calendar
+                  locale={es}
+                  mode="single"
+                  selected={parsearFechaLocal(pedido.fecha_entrega)}
+                  classNames={{day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-black/10 dark:hover:bg-white/10 rounded-md transition-colors"}}
+                  onSelect={(newDate) => {
+                    if (!newDate) return;
+                    actualizarFecha(pedido, newDate);
+                  }}
+                  className="z-15 absolute top-10 left-10 rounded-lg border bg-(--background-lighter)"
+                  />}
+                  <CalendarIcon cursor="pointer" onClick={() => toggleCalendario(pedido.id_pedido)} />
+                  {formatearFecha(pedido.fecha_entrega)}
+                </TableCell>
+                <TableCell>{pedido.cliente.nombre}</TableCell>
+                <TableCell className="flex items-center justify-center">
+                  <Badge 
+                    onClick={ async () =>{
+                      await actualizarEstado(pedido.id_pedido, pedido.estado)
+                      refetch()
+                    }}
+                    variant="outline" 
+                    className={`cursor-pointer text-base p-3.5 border-${colorDeEstado(pedido.estado)} text-${colorDeEstado(pedido.estado)}`}>{pedido.estado}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">{formatearMoneda(pedido.monto)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter className="text-(--accent) text-xl">
+            <TableRow >
+              <TableCell colSpan={3}>Total</TableCell>
+              <TableCell className="text-right">{formatearMoneda(data.montoTotal)}</TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
       </div>
     </div>
   )
 }
-
-const MiniLista = ({ titulo, items = [], color }) => (
-  <Card className={`bg-(--background-trans) border ${color} shadow-lg`}>
-    <CardHeader className="py-4 border-b border-white/5 text-lg ">
-      <CardTitle className={`text-base font-bold ${color}`}>{titulo}</CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-3 pt-4">
-      {items && items.length > 0 ? items.map((i, index) => (
-        <div key={i.id_venta || i.id_gasto || i._id || index} className="flex justify-between items-center text-sm">
-          <span className="truncate max-w-[140px] text-slate-300 text-(--accent-dimmed)" >{i.descripcion || 'Sin descripción'}</span>
-          <span className={`font-mono font-bold ${color}`}>{formatearMoneda(i.monto || i.total || 0)}</span>
-        </div>
-      )) : <p className="text-xs text-muted-foreground italic text-center py-2">Sin movimientos</p>}
-    </CardContent>
-  </Card>
-)
