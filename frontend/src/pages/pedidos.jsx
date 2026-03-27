@@ -106,20 +106,22 @@ export const PedidosPage = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-6" >
-        <Table>
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6 " >
+
+        <Table className="text-(--text) rounded-2xl">
           <TableHeader>
-            <TableRow className="text-(--accent-foreground) text-xl">
-              <TableHead >Fecha de Entrega</TableHead>
+            <TableRow className="text-base bg-(--accent-trans) border-none">
+              <TableHead className="rounded-tl-2xl pl-8 py-2.5">Fecha de Entrega</TableHead>
               <TableHead >Cliente</TableHead>
               <TableHead className="text-center">Estado</TableHead>
-              <TableHead className="text-right">Monto</TableHead>
+              <TableHead className="text-right rounded-tr-2xl pr-8">Monto</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="text-(--text-dark) text-base">
+          <TableBody className="text-(--text-dark) text-base bg-(--background-transer)">
               {data.pedidos.map((pedido) => (
-              <TableRow key={pedido.id_pedido}>
-                <TableCell className="font-medium flex relative flex-row align-middle gap-2" >
+              <TableRow key={pedido.id_pedido} className="border border-(--background-lighter)">
+                <TableCell className="p-0 border-l border-l-(--background-lighter)" >
+                  <div className="flex items-center gap-2 h-12 pl-8 ">
                   { pedidoAbierto == pedido.id_pedido && 
                   <Calendar
                   locale={es}
@@ -134,9 +136,10 @@ export const PedidosPage = () => {
                   />}
                   <CalendarIcon cursor="pointer" onClick={() => toggleCalendario(pedido.id_pedido)} />
                   {formatearFecha(pedido.fecha_entrega)}
+                  </div>
                 </TableCell>
                 <TableCell>{pedido.cliente.nombre}</TableCell>
-                <TableCell className="flex items-center justify-center">
+                <TableCell className="text-center align-middle">
                   <Badge 
                     onClick={ async () =>{
                       await actualizarEstado(pedido.id_pedido, pedido.estado)
@@ -146,14 +149,14 @@ export const PedidosPage = () => {
                     className={`cursor-pointer text-base p-3.5 border-${colorDeEstado(pedido.estado)} text-${colorDeEstado(pedido.estado)}`}>{pedido.estado}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right">{formatearMoneda(pedido.monto)}</TableCell>
+                <TableCell className="text-right pr-8 border-r border-r-(--background-lighter)">{formatearMoneda(pedido.monto)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
-          <TableFooter className="text-(--accent) text-xl">
-            <TableRow >
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">{formatearMoneda(data.montoTotal)}</TableCell>
+          <TableFooter className="text-(--accent) text-base border-t border-(--accent)">
+            <TableRow className="bg-(--background-trans)">
+              <TableCell colSpan={3} className="rounded-bl-2xl pl-8">Total</TableCell>
+              <TableCell className="text-right rounded-br-2xl pr-8">{formatearMoneda(data.montoTotal)}</TableCell>
             </TableRow>
           </TableFooter>
         </Table>

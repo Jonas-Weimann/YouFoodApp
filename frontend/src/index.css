@@ -21,6 +21,7 @@
   --background: oklch(21.472% 0.02306 14.402);
   --background-dimmed: oklch(25.567% 0.03002 15.874);
   --background-trans: oklch(25.567% 0.03002 15.874 / 0.753);
+  --background-transer: oklch(25.567% 0.03002 15.874 / 0.637);
   --background-light: oklch(30.365% 0.04103 14.918);
   --background-lighter: oklch(36.612% 0.03155 12.596);
   --card-bakground: oklch(25.567% 0.03002 15.874);
@@ -38,6 +39,7 @@
   --muted: oklch(0.967 0.001 286.375);
   --muted-foreground: oklch(0.552 0.016 285.938);
   --accent: oklch(68.774% 0.14035 17.58);
+  --accent-trans: oklch(68.774% 0.14035 17.58 / 0.644);
   --accent-dimmed: rgb(206, 103, 110);
   --accent-foreground: oklch(52.79% 0.11525 17.582);
   --destructive: oklch(0.577 0.245 27.325);
