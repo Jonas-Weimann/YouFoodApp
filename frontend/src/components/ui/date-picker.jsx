@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { format } from "date-fns"
 import { ChevronDownIcon } from "lucide-react"
 import { es } from "date-fns/locale"
@@ -11,18 +10,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-export function DatePicker({ defaultValue }) {
-  const [date, setDate] = useState(defaultValue || null)
+export function DatePicker({ selected, onSelect }) {
 
   return (
     <Popover>
       <PopoverTrigger aschild={true}>
         <Button
           variant="outline"
-          data-empty={!date}
+          data-empty={!selected}
           className="justify-between text-left font-normal w-full text-(--accent) border-(--accent) transition-colors"
         >
-          {date ? format(date, "PPP", {locale: es}) : <span>Elige una fecha</span>}
+          {selected ? format(selected, "PPP", {locale: es}) : <span>Elige una fecha</span>}
           <ChevronDownIcon />
         </Button>
       </PopoverTrigger>
@@ -30,9 +28,9 @@ export function DatePicker({ defaultValue }) {
         <Calendar
           mode="single"
           locale={es}
-          selected={date}
-          onSelect={setDate}
-          defaultMonth={date}
+          selected={selected}
+          onSelect={onSelect}
+          defaultMonth={selected}
           classNames={{day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-black/10 dark:hover:bg-white/10 rounded-md transition-colors"}}
         />
       </PopoverContent>

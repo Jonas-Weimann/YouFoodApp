@@ -14,7 +14,7 @@ export const PedidosPage = () => {
     data, isLoading, isError, error, refetch, 
     pedidosMostrar, date, setDate, fetchPedidosRange, actualizarFecha 
   } = usePedidosLogic()
-  const { clientes } = useClientes()
+  const { isLoadingClientes, clientesFiltrados, setBusquedaCliente, refetchClientes } = useClientes()
 
   if (isLoading) return <LoadingState />
   if (isError) return <ErrorState error={error} refetch={refetch} />
@@ -31,7 +31,7 @@ export const PedidosPage = () => {
 
       <div className="flex flex-row gap-5 w-full justify-between items-center">
         <DatePickerWithRange date={date} setDate={setDate} onSelect={fetchPedidosRange} />
-        <NewPedido onPedidoCreado={refetch} clientes={clientes} />
+        <NewPedido onPedidoCreado={refetch} clientes={clientesFiltrados} isLoadingClientes={isLoadingClientes} onClienteCreado={refetchClientes} setBusquedaCliente={setBusquedaCliente} />
       </div>
 
       <PedidosTable 

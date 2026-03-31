@@ -53,7 +53,7 @@ export const usePedidoForm = (onSuccess) => {
             await pedidosService.create({
                 id_cliente: formData.idCliente,
                 fecha_entrega: format(formData.fechaEntrega, "yyyy-MM-dd"),
-                items: items.map(i => ({ id_producto: i.id_producto, cantidad: i.cantidad }))
+                items: items.map(i => ({ id_producto: i.id_producto, precio_unitario: i.precio, cantidad: i.cantidad }))
             })
             toast.success("Pedido creado")
             setItems([])
@@ -66,11 +66,26 @@ export const usePedidoForm = (onSuccess) => {
         }
     }
 
+    const actualizarPrecio = (index, nuevoPrecio) => {
+    const nuevosItems = [...items];
+    const item = nuevosItems[index];
+
+    const precioNumerico = Number(nuevoPrecio) || 0;
+
+    nuevosItems[index] = {
+        ...item,
+        precio: precioNumerico,
+        subtotal: precioNumerico * item.cantidad
+    };
+
+    setItems(nuevosItems);
+};
+
     return {
         formData, setFormData,
         items, productosFiltrados,
         busqueda, setBusqueda,
         isLoading, totalPedido,
-        agregarProducto, actualizarCantidad, quitarProducto, handleSubmit
+        agregarProducto, actualizarCantidad, quitarProducto, handleSubmit, actualizarPrecio
     }
 }

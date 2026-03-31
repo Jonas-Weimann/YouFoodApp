@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
 import { QuantityStepper } from "@/components/ui/stepper"
 
-export const PedidoItemsTable = ({ items, onUpdateQty, onRemove }) => (
+export const PedidoItemsTable = ({ items, onUpdateQty, onUpdatePrice, onRemove }) => (
     <div className="max-h-[40vh] overflow-y-auto border rounded-lg border-(--accent-trans)">
         <Table>
             <TableHeader>
@@ -22,7 +22,19 @@ export const PedidoItemsTable = ({ items, onUpdateQty, onRemove }) => (
                     items.map((item, idx) => (
                         <TableRow key={idx}>
                             <TableCell className="font-medium">{item.nombre}</TableCell>
-                            <TableCell className="text-center">${item.precio}</TableCell>
+                            <TableCell className="text-center">
+                                <div className="flex items-center justify-center gap-1 group">
+                                    <span className="text-xs opacity-50">$</span>
+                                    <input 
+                                        type="number"
+                                        min={0}
+                                        max={1000000}
+                                        value={item.precio}
+                                        onChange={(e) => onUpdatePrice(idx, e.target.value)}
+                                        className="w-20 bg-transparent border-b border-transparent hover:border-(--accent-trans) focus:border-(--accent) focus:outline-none text-center transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    />
+                                </div>
+                            </TableCell>
                             <TableCell className="flex justify-center py-2">
                                 <QuantityStepper value={item.cantidad} onChange={(val) => onUpdateQty(idx, val)} />
                             </TableCell>

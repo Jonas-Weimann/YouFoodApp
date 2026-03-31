@@ -23,7 +23,7 @@ export const PedidoProductSelector = ({ productos, onSelect, onSearch, busqueda 
                 </Button>
             </DialogTrigger>
             
-            <DialogContent className="bg-(--background) border-(--accent) text-(--text) w-lg">
+            <DialogContent className="bg-(--background) border-(--accent) text-(--text) w-lg animate-(--animation-fade-in)">
                 <DialogHeader>
                     <DialogTitle>Seleccionar Producto</DialogTitle>
                     <DialogDescription>Busca y selecciona un producto para añadir al pedido.</DialogDescription>

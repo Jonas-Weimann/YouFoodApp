@@ -8,14 +8,17 @@ import { DatePicker } from "@/components/ui/date-picker"
 import { Button } from "@/components/ui/button"
 import { Loader2, CirclePlus } from "lucide-react"
 import { useState } from "react"
+import { NewCliente } from "@/components/auxiliars/new-cliente"
 
-export const NewPedido = ({ clientes, onPedidoCreado }) => {
+export const NewPedido = ({ clientes, onPedidoCreado, onClienteCreado, isLoadingClientes, setBusquedaCliente }) => {
     const [open, setOpen] = useState(false)
     const {
         formData, setFormData, items, productosFiltrados,
         setBusqueda, isLoading, totalPedido,
-        agregarProducto, actualizarCantidad, quitarProducto, handleSubmit
+        agregarProducto, actualizarCantidad, actualizarPrecio, quitarProducto, handleSubmit
     } = usePedidoForm(() => {setOpen(false); onPedidoCreado()})
+
+    
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -25,14 +28,15 @@ export const NewPedido = ({ clientes, onPedidoCreado }) => {
                 </Button>
             </DialogTrigger>
             
-            <DialogContent className="w-2.5xl bg-(--background) text-(--text)">
+            <DialogContent className="w-2.5xl bg-(--background) text-(--text) animate-(--animation-fade-in)">
                 <DialogHeader className="text-lg font-semibold text-center">Nuevo Pedido</DialogHeader>
 
                 <div className="grid grid-cols-2 gap-4">
                     <Field className="flex-row items-center gap-2">
                         <FieldLabel>Cliente:</FieldLabel>
+                        <NewCliente onClienteCreado={onClienteCreado} isLoading={isLoadingClientes}/>
                         <Combobox onValueChange={(v) => setFormData(p => ({...p, idCliente: clientes.find(c => c.nombre === v)?.id_cliente}))}>
-                            <ComboboxInput placeholder="Buscar cliente..." onValueChange={setBusqueda} className="text-(--accent)"/>
+                            <ComboboxInput placeholder="Buscar cliente..." onValueChange={setBusquedaCliente} className="text-(--accent)"/>
                             <ComboboxContent>
                                 <ComboboxList className="max-h-60 overflow-y-auto scrollbar-style border border-(--accent) rounded-xl text-(--text) bg-(--background-trans)">
                                     {clientes?.map(c => <ComboboxItem key={c.id_cliente} value={c.nombre} className="aria-selected:text-(--accent)" >{c.nombre}</ComboboxItem>)}
@@ -51,6 +55,7 @@ export const NewPedido = ({ clientes, onPedidoCreado }) => {
                     items={items} 
                     onUpdateQty={actualizarCantidad} 
                     onRemove={quitarProducto} 
+                    onUpdatePrice={actualizarPrecio}
                 />
 
                 <PedidoProductSelector 
