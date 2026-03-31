@@ -35,5 +35,11 @@ export const pedidosService = {
   delete: async (id) => {
     const { data } = await api.delete(`/pedidos/${id}`)
     return data
+  },
+
+  create: async (pedidoData) => {
+    const { data } = await api.post('/pedidos', pedidoData)
+    console.log(pedidoData)
+    return data
   }
 }
