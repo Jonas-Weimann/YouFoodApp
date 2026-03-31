@@ -65,6 +65,10 @@
   --cell-radius: 0.5rem;
 }
 
+.scrollbar-style {
+  scrollbar-width: thin;
+}
+
 .dark {
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
