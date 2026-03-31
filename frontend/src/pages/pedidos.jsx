@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Kpi } from "@/components/ui/kpi" 
 import { usePedidosData } from "@/hooks/use-pedidos-data"
 import { formatearMoneda, formatearFecha, parsearFechaLocal } from "@/utilities/formatters"
@@ -13,11 +13,24 @@ import { Calendar } from "@/components/ui/calendar"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { pedidosService } from "@/services/pedidos.service"
 import { es } from "date-fns/locale"
+import { DatePickerWithRange } from "@/components/ui/date-picker"
+import { addDays } from "date-fns"
 
 export const PedidosPage = () => {
   const [pedidoAbierto, setPedidoAbierto] = useState(null)
+  const [pedidosMostrar, setPedidosMostrar] = useState([])
   const { user } = useAuthStore()
   const { data, isLoading, error, isError, refetch } = usePedidosData()
+  const [date, setDate] = useState({
+    from: new Date(new Date().getFullYear(), 0, 20),
+    to: addDays(new Date(new Date().getFullYear(), 0, 20), 20),
+  })
+
+  useEffect(() => {
+    if (data?.pedidos) {
+      setPedidosMostrar(data.pedidos)
+    }
+  }, [data])
 
   if (isLoading) return (
     <div className="flex h-[60vh] flex-col items-center justify-center gap-4">
@@ -53,6 +66,18 @@ export const PedidosPage = () => {
   const toggleCalendario = (id) => {
     setPedidoAbierto(prevId => (prevId === id ? null : id));
   }
+
+  const fetchPedidosRange = async (inicio, fin) => {
+    if (!inicio || !fin) return refetch();
+      try {
+        const res = await pedidosService.getByRange(inicio, fin)
+        setPedidosMostrar(res);
+      } catch (err) {
+        console.error("Error al filtrar por rango", err)
+      }
+    }
+
+
 
 
   return (
@@ -107,6 +132,7 @@ export const PedidosPage = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-1 gap-6 " >
+        <DatePickerWithRange date={date} setDate={setDate} onSelect={fetchPedidosRange}/>
 
         <Table className="text-(--text) rounded-2xl">
           <TableHeader>
@@ -118,7 +144,7 @@ export const PedidosPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody className="text-(--text-dark) text-base bg-(--background-transer)">
-              {data.pedidos.map((pedido) => (
+              {pedidosMostrar.map((pedido) => (
               <TableRow key={pedido.id_pedido} className="border border-(--background-lighter)">
                 <TableCell className="p-0 border-l border-l-(--background-lighter)" >
                   <div className="flex items-center gap-2 h-12 pl-8 ">
@@ -132,12 +158,13 @@ export const PedidosPage = () => {
                     if (!newDate) return;
                     actualizarFecha(pedido, newDate);
                   }}
-                  className="z-15 absolute top-10 left-10 rounded-lg border bg-(--background-lighter)"
+                  className="z-15 absolute top-10 left-10 rounded-lg border bg-(--background-light) text-(--text)"
                   />}
                   <CalendarIcon cursor="pointer" onClick={() => toggleCalendario(pedido.id_pedido)} />
                   {formatearFecha(pedido.fecha_entrega)}
                   </div>
                 </TableCell>
+                {console.log(pedido)}
                 <TableCell>{pedido.cliente.nombre}</TableCell>
                 <TableCell className="text-center align-middle">
                   <Badge 
@@ -156,7 +183,7 @@ export const PedidosPage = () => {
           <TableFooter className="text-(--accent) text-base border-t border-(--accent)">
             <TableRow className="bg-(--background-trans)">
               <TableCell colSpan={3} className="rounded-bl-2xl pl-8">Total</TableCell>
-              <TableCell className="text-right rounded-br-2xl pr-8">{formatearMoneda(data.montoTotal)}</TableCell>
+              <TableCell className="text-right rounded-br-2xl pr-8">{formatearMoneda(pedidosMostrar.reduce((acc, pedido) => acc + Number(pedido.monto), 0))}</TableCell>
             </TableRow>
           </TableFooter>
         </Table>
