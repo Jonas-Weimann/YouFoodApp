@@ -31,16 +31,21 @@ class PedidosDao {
                 const itemsProcesados = []
 
                 for (const item of items) {
-                const [prod] = await db`SELECT precio FROM productos WHERE id_producto = ${item.id_producto}`;
-                const precioConRecargo = prod.precio * factorRecargo;
-                const subtotal = item.cantidad * precioConRecargo;
+                    let precioFinal;
+                    if (item.precio_unitario) {
+                        precioFinal = Number(item.precio_unitario)
+                    } else {
+                        const [prod] = await db`SELECT precio FROM productos WHERE id_producto = ${item.id_producto}`;
+                        precioFinal = prod.precio * factorRecargo;
+                    }
+                const subtotal = item.cantidad * precioFinal;
                 
                 montoTotal += subtotal;
                 itemsProcesados.push({
                     id_pedido: null,
                     id_producto: item.id_producto,
                     cantidad: item.cantidad,
-                    precio_unitario: precioConRecargo
+                    precio_unitario: precioFinal
                 });
                 }
 
